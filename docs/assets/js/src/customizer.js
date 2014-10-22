@@ -319,7 +319,20 @@ window.onload = function () { // wait for load in a dumb way because B-0
 
   function generateJS(preamble) {
     var $checked = $('#plugin-section input:checked')
-    var jqueryCheck = 'if (typeof jQuery === "undefined") { throw new Error("Bootstrap\'s JavaScript requires jQuery") }\n\n'
+    var jqueryCheck = [
+      'if (typeof jQuery === \'undefined\') {',
+      '  throw new Error(\'Bootstrap\\\'s JavaScript requires jQuery\')',
+      '}\n'
+    ].join('\n')
+    var jqueryVersionCheck = [
+      '+function ($) {',
+      '  var versionString = $.fn.jquery.split(\' \')[0]',
+      '  var version = versionString.match(/(\\d+)(?=\\.?)/g)',
+      '  if ((version[0] < 2 && version[1] < 9) || /1\\.9\\.0rc1|1\\.9\\.0b1/.test(versionString)) {',
+      '    throw new Error(\'Bootstrap\\\'s JavaScript requires jQuery version 1.9 or higher\')',
+      '  }',
+      '}(jQuery);\n\n'
+    ].join('\n')
 
     if (!$checked.length) return false
 
@@ -329,7 +342,7 @@ window.onload = function () { // wait for load in a dumb way because B-0
       .join('\n')
 
     preamble = cw + preamble
-    js = jqueryCheck + js
+    js = jqueryCheck + jqueryVersionCheck + js
 
     return {
       'bootstrap.js': preamble + js,

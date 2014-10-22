@@ -37,8 +37,22 @@ module.exports = function (grunt) {
             ' * Copyright 2011-<%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
             ' * Licensed under <%= pkg.license.type %> (<%= pkg.license.url %>)\n' +
             ' */\n',
-    // NOTE: This jqueryCheck code is duplicated in customizer.js; if making changes here, be sure to update the other copy too.
-    jqueryCheck: 'if (typeof jQuery === \'undefined\') { throw new Error(\'Bootstrap\\\'s JavaScript requires jQuery\') }\n\n',
+    // NOTE: This jqueryCheck/jqueryVersionCheck code is duplicated in customizer.js;
+    //       if making changes here, be sure to update the other copy too.
+    jqueryCheck: [
+      'if (typeof jQuery === \'undefined\') {',
+      '  throw new Error(\'Bootstrap\\\'s JavaScript requires jQuery\')',
+      '}\n'
+    ].join('\n'),
+    jqueryVersionCheck: [
+      '+function ($) {',
+      '  var versionString = $.fn.jquery.split(\' \')[0]',
+      '  var version = versionString.match(/(\\d+)(?=\\.?)/g)',
+      '  if ((version[0] < 2 && version[1] < 9) || /1\\.9\\.0rc1|1\\.9\\.0b1/.test(versionString)) {',
+      '    throw new Error(\'Bootstrap\\\'s JavaScript requires jQuery version 1.9 or higher\')',
+      '  }',
+      '}(jQuery);\n\n'
+    ].join('\n'),
 
     // Task configuration.
     clean: {
@@ -93,7 +107,7 @@ module.exports = function (grunt) {
 
     concat: {
       options: {
-        banner: '<%= banner %>\n<%= jqueryCheck %>',
+        banner: '<%= banner %>\n<%= jqueryCheck %>\n<%= jqueryVersionCheck %>',
         stripBanners: false
       },
       bootstrap: {

@@ -478,4 +478,8 @@ module.exports = function (grunt) {
       done();
     });
   });
+
+
+  // Fabrica grunt tasks
+  grunt.registerTask('fabrica', ['less', 'docs']);
 };

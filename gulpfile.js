@@ -31,3 +31,5 @@ gulp.task('serve', function () {
 			.on('end', browserSync.reload);
 	});
 });
+
+gulp.task('default', ['serve']);
